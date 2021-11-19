@@ -7,29 +7,30 @@ from ipywidgets.embed import embed_minimal_html
 # docs: https://jupyter-gmaps.readthedocs.io/en/latest/tutorial.html#heatmaps
 
 API_KEY = "AIzaSyDKHoSJ2IquAFdaqitxPfF2ZsxyNK53siI"
-DIR_PATH = "/Users/aaronbastian/Documents/MedicalSchool/NYIT/Granatosky_Lab/Python/DataAnalysis/Heatmap/"
+DIR_PATH = "DataAnalysis/Heatmap/"
 data = pd.read_excel(DIR_PATH + "parrot-positional-behavior.xlsx").dropna()
 
 
-def main():
+def main(WEIGHTED=True):
     gmaps.configure(api_key='AIzaSyDKHoSJ2IquAFdaqitxPfF2ZsxyNK53siI')
     
-    locs = get_locations()
+    locs = get_locations(WEIGHTED)
     center_coords = (40.65231269593503, -73.9905872575025)
-    figure_layout = {'width': '500px', 'margin': '0 auto 0 auto'}
+    figure_layout = {'width': '1000px', 'height': '1000px', 'margin': '0 auto 0 auto'}
     fig = gmaps.figure(map_type='HYBRID', center=center_coords ,zoom_level=14, layout=figure_layout)
 
-    # UN-WEIGHTED
-    # heatmap_layer = gmaps.heatmap_layer(
-    #     locs[["latitude", "longitude"]],
-    #     max_intensity = 100, point_radius = 5.0
-    # )
-    
-    # WEIGHTED
-    heatmap_layer = gmaps.heatmap_layer(
+    path = "WEIGHTED.html"
+    if WEIGHTED:
+        heatmap_layer = gmaps.heatmap_layer(
         locs[["latitude", "longitude"]], weights=locs["weights"],
         max_intensity = 100, point_radius = 5.0
-    )
+        )
+    else:
+        heatmap_layer = gmaps.heatmap_layer(
+        locs[["latitude", "longitude"]],
+        max_intensity = 10, point_radius = 5.0
+        )    
+        path = "UN-WEIGHTED.html"
 
     fig.add_layer(heatmap_layer)
     embed_minimal_html(DIR_PATH + "WEIGHTED.html", views=[fig])
@@ -37,7 +38,7 @@ def main():
 
 
 
-def get_locations():
+def get_locations(WEIGHTED=False):
     locs = {
         "latitude" : [],
         "longitude" : [],
@@ -56,13 +57,16 @@ def get_locations():
 
         if long < -180 or long > 180:  # Janky correction of values without decimal point
             long = long/1000000
-
-        locs["latitude"].append(lat)
-        locs["longitude"].append(long)
-        locs["weights"].append(weight)
+        
+        if not (WEIGHTED and weight==0):
+            print(weight)
+            locs["latitude"].append(lat)
+            locs["longitude"].append(long)
+            locs["weights"].append(weight)
     
     return pd.DataFrame(locs)
 
 
 if __name__ == "__main__":
-    main()
+    main(True)
+    print("FIN")

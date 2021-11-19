@@ -1,9 +1,6 @@
-from numpy.core.fromnumeric import repeat
-from numpy.lib.npyio import save
 import pandas as pd
-import numpy as np
 import matplotlib
-from matplotlib import style
+import matplotlib.animation
 from matplotlib import pyplot as plt
 
 # Animations: https://matplotlib.org/stable/api/animation_api.html
@@ -28,7 +25,6 @@ plt.rcParams['axes.facecolor'] = (1,1,1,0)
 plt.rcParams["font.size"] = "12"
 plt.ylim([-0.06, 0.40])
 plt.xlim([0, 100])
-# style.use("fivethirtyeight")
 
 TIME = list(raw_data["TIME"])
 FORCE_1 = list(raw_data["FORCE_1"])
@@ -47,11 +43,10 @@ def animate(idx):
     plt.plot(time, force_3, "forestgreen", label="force_3", antialiased=True, linewidth=2)
 
     plt.legend(["Force 1", "Force 2", "Force 3"])
-    
-    
-anim = matplotlib.animation.FuncAnimation(fig, animate, frames=len(TIME), interval=1, repeat=False)
+
+anim = matplotlib.animation.FuncAnimation(fig, animate, frames=len(TIME), interval=10, repeat=False)
 
 save_file = "DataAnalysis/Heatmap/ForceGraphs/output_graph.gif"
-anim.save(save_file, writer='ffmpeg')
-# plt.show()
+# anim.save(save_file, writer='ffmpeg')
+plt.show()
 print("FINISH")
