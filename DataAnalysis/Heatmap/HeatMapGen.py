@@ -1,4 +1,5 @@
 from gmaps.figure import FigureLayout
+from gmaps.geotraitlets import Opacity
 import pandas as pd
 import gmaps
 import gmaps.datasets
@@ -23,16 +24,17 @@ def main(WEIGHTED=True):
     if WEIGHTED:
         heatmap_layer = gmaps.heatmap_layer(
         locs[["latitude", "longitude"]], weights=locs["weights"],
-        max_intensity = 50, point_radius = 5.0
+        max_intensity = 100, point_radius = 10.0, opacity=1.0
         )
     else:
         heatmap_layer = gmaps.heatmap_layer(
         locs[["latitude", "longitude"]],
-        max_intensity = 10, point_radius = 5.0
+        max_intensity = 10, point_radius = 10.0, opacity=1.0
         )    
         path = "UN-WEIGHTED.html"
 
     fig.add_layer(heatmap_layer)
+    print("making", path)
     embed_minimal_html(DIR_PATH + path, views=[fig])
 
 
@@ -67,5 +69,5 @@ def get_locations(WEIGHTED=False):
 
 
 if __name__ == "__main__":
-    main(True)
+    main(False)
     print("FIN")
